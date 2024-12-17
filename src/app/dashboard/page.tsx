@@ -22,6 +22,14 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export default function Page() {
   return (
@@ -46,19 +54,61 @@ export default function Page() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="grid auto-rows-min gap-4 w-full md:grid-cols-12">
             {/* First Row */}
-            <div className="aspect-video rounded-xl bg-muted/50 col-span-3 p-4">Active Services</div>
-            <div className="aspect-video rounded-xl bg-muted/50 col-span-3 p-4">Sales (MTD)</div>
-            <div className="aspect-video rounded-xl bg-muted/50 col-span-3 p-4">Active Agents</div>
-            <div className="aspect-video rounded-xl bg-muted/50 col-span-3 p-4">Projected Commissions</div>
+            <div className="aspect-video rounded-xl bg-muted/50 col-span-3">
+              <Card className="flex flex-col justify-center min-h-full">
+                <CardHeader className="items-center pb-4">
+                  <CardTitle>Active Services</CardTitle>
+                  <CardDescription className="pb-2">Running Total</CardDescription>
+                  <p className="text-6xl font-semibold">1,524</p>
+                </CardHeader>
+              </Card>
+            </div>
+            <div className="aspect-video rounded-xl bg-muted/50 col-span-3">
+              <Card className="flex flex-col justify-center min-h-full">
+                <CardHeader className="items-center pb-4">
+                  <CardTitle>Sales</CardTitle>
+                  <CardDescription className="pb-2">Month to Date</CardDescription>
+                  <p className="text-6xl font-semibold">84</p>
+                </CardHeader>
+              </Card>
+            </div>
+            <div className="aspect-video rounded-xl bg-muted/50 col-span-3">
+              <Card className="flex flex-col justify-center min-h-full">
+                <CardHeader className="items-center pb-4">
+                  <CardTitle>Disconnects</CardTitle>
+                  <CardDescription className="pb-2">Month to Date</CardDescription>
+                  <p className="text-6xl font-semibold">19</p>
+                </CardHeader>
+              </Card>
+            </div>
+            <div className="aspect-video rounded-xl bg-muted/50 col-span-3">
+              <Card className="justify-center min-h-full">
+                <CardHeader className="flex flex-col items-center pb-4 min-h-full">
+                  <CardTitle>Commissions</CardTitle>
+                  <CardDescription className="pb-2">Estimate Subject to Change</CardDescription>
+                  <h1 className="font-semibold text-6xl">$481.43</h1>
+                </CardHeader>
+              </Card>
+            </div>
             {/* Second Row */}
+
             <div className="rounded-xl col-span-8 row-span-4">
               <ActivationsAndCancellations />
             </div>
             <div className="rounded-xl col-span-4 row-span-2">
               <SalesByProduct />
             </div>
-            <div className="rounded-xl bg-muted/50 col-span-4 row-span-2 p-4">Current Promo</div>
-            <div className="rounded-xl bg-muted/50 col-span-12 p-4">Recent Sales</div>
+            <div className="rounded-xl bg-muted/50 col-span-4 row-span-2">
+              <Card className="flex flex-col justify-center min-h-full">
+                <CardHeader className="items-center pb-4">
+                  <CardTitle>Current Promo</CardTitle>
+                  <p className="text-4xl font-semibold flex-shrink">🎄 Holiday2024 🎄</p>
+                </CardHeader>
+              </Card>
+            </div>
+            <div className="rounded-xl bg-muted/50 col-span-12 p-4">
+              Recent Sales
+            </div>
           </div>
         </div>
       </SidebarInset>
