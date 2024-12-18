@@ -1,12 +1,16 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import { SalesByProduct } from "@/components/charts/sales-by-product"
-import { ActivationsAndCancellations } from "@/components/charts/activations-and-cancellations"
+import { FC, SVGProps, ReactNode } from "react"
+import Image from "next/image"
+import Link from 'next/link';
 import {
-  ChartConfig,
-} from "@/components/ui/chart";
+  ClerkProvider,
+  UserButton,
+  SignedIn,
+  SignedOut,
+  useAuth
+} from "@clerk/nextjs"
+import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -22,16 +26,41 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+
+
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import { Overview } from "@/components/charts/overview"
+import { RecentSales } from "@/components/charts/recent-sales"
+import { DollarSignIcon, RadioTowerIcon, RefreshCwOffIcon, Users2Icon } from "lucide-react";
+
+type CardData = {
+  title: string;
+  description: string;
+  value: ReactNode;
+  icon: FC<SVGProps<SVGSVGElement>>;
+};
 
 export default function Page() {
+  const cards: CardData[] = [
+    { title: "Active Services", description: "Running Total", value: "1,524", icon: RadioTowerIcon },
+    { title: "Sales", description: "Month to Date", value: "84", icon: Users2Icon },
+    { title: "Disconnects", description: "Month to Date", value: "19", icon: RefreshCwOffIcon },
+    { title: "Commissions", description: "Estimate Subject to Change", value: "$481.43", icon: DollarSignIcon },
+  ];
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -43,75 +72,164 @@ export default function Page() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Dashboard
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 w-full md:grid-cols-12">
-            {/* First Row */}
-            <div className="aspect-video rounded-xl bg-muted/50 col-span-3">
-              <Card className="flex flex-col justify-center min-h-full">
-                <CardHeader className="items-center pb-4">
-                  <CardTitle>Active Services</CardTitle>
-                  <CardDescription className="pb-2">Running Total</CardDescription>
-                  <p className="text-6xl font-semibold">1,524</p>
-                </CardHeader>
-              </Card>
-            </div>
-            <div className="aspect-video rounded-xl bg-muted/50 col-span-3">
-              <Card className="flex flex-col justify-center min-h-full">
-                <CardHeader className="items-center pb-4">
-                  <CardTitle>Sales</CardTitle>
-                  <CardDescription className="pb-2">Month to Date</CardDescription>
-                  <p className="text-6xl font-semibold">84</p>
-                </CardHeader>
-              </Card>
-            </div>
-            <div className="aspect-video rounded-xl bg-muted/50 col-span-3">
-              <Card className="flex flex-col justify-center min-h-full">
-                <CardHeader className="items-center pb-4">
-                  <CardTitle>Disconnects</CardTitle>
-                  <CardDescription className="pb-2">Month to Date</CardDescription>
-                  <p className="text-6xl font-semibold">19</p>
-                </CardHeader>
-              </Card>
-            </div>
-            <div className="aspect-video rounded-xl bg-muted/50 col-span-3">
-              <Card className="justify-center min-h-full">
-                <CardHeader className="flex flex-col items-center pb-4 min-h-full">
-                  <CardTitle>Commissions</CardTitle>
-                  <CardDescription className="pb-2">Estimate Subject to Change</CardDescription>
-                  <h1 className="font-semibold text-6xl">$481.43</h1>
-                </CardHeader>
-              </Card>
-            </div>
-            {/* Second Row */}
-
-            <div className="rounded-xl col-span-8 row-span-4">
-              <ActivationsAndCancellations />
-            </div>
-            <div className="rounded-xl col-span-4 row-span-2">
-              <SalesByProduct />
-            </div>
-            <div className="rounded-xl bg-muted/50 col-span-4 row-span-2">
-              <Card className="flex flex-col justify-center min-h-full">
-                <CardHeader className="items-center pb-4">
-                  <CardTitle>Current Promo</CardTitle>
-                  <p className="text-4xl font-semibold flex-shrink">🎄 Holiday2024 🎄</p>
-                </CardHeader>
-              </Card>
-            </div>
-            <div className="rounded-xl bg-muted/50 col-span-12 p-4">
-              Recent Sales
-            </div>
+        <div className="hidden flex-col md:flex">
+        <div className="flex-1 space-y-4 p-8 pt-6">
+          <div className="flex items-center justify-between space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
           </div>
+          <Tabs defaultValue="overview" className="space-y-4">
+            <div className="flex items-center justify-between space-y-2">
+              <TabsList>
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="analytics" disabled>
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger value="reports" disabled>
+                  Reports
+                </TabsTrigger>
+                <TabsTrigger value="notifications" disabled>
+                  Notifications
+                </TabsTrigger>
+              </TabsList>
+              <div className="flex items-center space-x-2">
+                <Button>Download</Button>
+              </div>
+            </div>
+            <TabsContent value="overview" className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Total Revenue
+                    </CardTitle>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      className="h-4 w-4 text-muted-foreground"
+                    >
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">$45,231.89</div>
+                    <p className="text-xs text-muted-foreground">
+                      +20.1% from last month
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Subscriptions
+                    </CardTitle>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      className="h-4 w-4 text-muted-foreground"
+                    >
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                      <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">+2350</div>
+                    <p className="text-xs text-muted-foreground">
+                      +180.1% from last month
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Sales</CardTitle>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      className="h-4 w-4 text-muted-foreground"
+                    >
+                      <rect width="20" height="14" x="2" y="5" rx="2" />
+                      <path d="M2 10h20" />
+                    </svg>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">+12,234</div>
+                    <p className="text-xs text-muted-foreground">
+                      +19% from last month
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Active Now
+                    </CardTitle>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      className="h-4 w-4 text-muted-foreground"
+                    >
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">+573</div>
+                    <p className="text-xs text-muted-foreground">
+                      +201 since last hour
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                <Card className="col-span-4">
+                  <CardHeader>
+                    <CardTitle>Overview</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pl-2">
+                    <Overview />
+                  </CardContent>
+                </Card>
+                <Card className="col-span-3">
+                  <CardHeader>
+                    <CardTitle>Recent Sales</CardTitle>
+                    <CardDescription>
+                      You made 265 sales this month.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <RecentSales />
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
+      </div>
       </SidebarInset>
-    </SidebarProvider>
-  )
-}
+  </SidebarProvider>
+)}
