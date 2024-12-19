@@ -16,6 +16,9 @@ import {
   Send,
 } from "lucide-react"
 
+import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
+
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavSecondary } from "@/components/nav-secondary"
@@ -33,9 +36,14 @@ import {
 import {
   ClerkProvider,
   UserButton,
+  OrganizationSwitcher,
+  OrganizationProfile,
   SignedIn,
   SignedOut,
 } from "@clerk/nextjs"
+import {
+  dark
+} from "@clerk/themes"
 
 const data = {
   user: {
@@ -125,23 +133,20 @@ const data = {
   ],
 }
 
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { theme, setTheme } = useTheme();
+
+  const appearance = React.useMemo(() => {
+    return theme === "dark" ? dark : undefined;
+  }, [theme]);
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Command className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">RevGen Networks</span>
-                  <span className="truncate text-xs">Distributor</span>
-                </div>
-              </a>
-            </SidebarMenuButton>
+            <OrganizationSwitcher hidePersonal appearance={{baseTheme: appearance}}/>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

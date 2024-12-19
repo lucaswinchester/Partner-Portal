@@ -1,8 +1,11 @@
 "use client";
 
+import * as React from "react"
+
 import {
   BadgeCheck,
   Bell,
+  Building,
   ChevronsUpDown,
   CreditCard,
   LogOut,
@@ -34,6 +37,7 @@ import {
 
 import {
   ClerkProvider,
+  OrganizationProfile,
   SignedIn,
   SignInButton,
   SignedOut,
@@ -42,6 +46,9 @@ import {
   useClerk,
   useUser,
 } from "@clerk/nextjs";
+import {
+  dark
+} from "@clerk/themes"
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -57,6 +64,10 @@ export function NavUser() {
       setIcon("moon");
       setText("Toggle to dark mode");
     }
+  }, [theme]);
+
+  const appearance = React.useMemo(() => {
+    return theme === "dark" ? dark : undefined;
   }, [theme]);
 
   const handleClick = () => {
@@ -114,38 +125,16 @@ export function NavUser() {
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-full">
-                  <AvatarImage src={user?.imageUrl} alt={user?.fullName || "User Avatar"} />
-                  <AvatarFallback className="rounded-full">RG</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user?.fullName}</span>
-                  <span className="truncate text-xs">{user?.primaryEmailAddress?.emailAddress}</span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={handleClick}>
                 {icon === "moon" ? <Moon className="mr-2" /> : <Sun className="mr-2" />}
                 {text}
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={handleUserProfile}>
                 <BadgeCheck className="mr-2" />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard className="mr-2" />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell className="mr-2" />
-                Notifications
+                My Account
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
